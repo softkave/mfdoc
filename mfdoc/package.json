@@ -1,6 +1,6 @@
 {
   "name": "mfdoc",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Auto generate JS SDK and HTTP API documentation",
   "author": {
     "email": "ywordk@gmail.com",
@@ -62,10 +62,10 @@
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "check:circular-deps": "npx dpdm --no-warning --no-tree ./src/index.ts",
-    "show:packlist": "npm run clean && tsc && npm pack --dry-run",
-    "publish:npm": "npm run clean && tsc && npm publish",
-    "publish:local:yalc": "npm run clean && tsc && yalc publish",
-    "publish:local:pnpm": "npm run clean && tsc && pnpm link --global"
+    "show:packlist": "pnpm compile && npm pack --dry-run",
+    "publish:npm": "pnpm compile && npm publish",
+    "publish:local:yalc": "pnpm compile && yalc publish",
+    "publish:local:pnpm": "pnpm compile && pnpm link --global"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.3.1",
