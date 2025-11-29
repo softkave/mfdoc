@@ -130,13 +130,16 @@ export type ConvertToMfdocType<
   ? MfdocFieldObjectTypePrimitive<Exclude<T, undefined>>
   : MfdocFieldBaseTypePrimitive;
 
-export type MfdocFieldObjectFieldsMap<T extends object> = Required<{
-  [K in keyof T]: K extends OptionalKeysOf<T>
-    ? MfdocFieldObjectFieldTypePrimitive<Exclude<T[K], undefined>, false>
-    : MfdocFieldObjectFieldTypePrimitive<Exclude<T[K], undefined>, true>;
-}>;
+export type MfdocFieldObjectFieldsMap<T extends object | undefined> =
+  T extends object
+    ? Required<{
+        [K in keyof T]: K extends OptionalKeysOf<T>
+          ? MfdocFieldObjectFieldTypePrimitive<Exclude<T[K], undefined>, false>
+          : MfdocFieldObjectFieldTypePrimitive<Exclude<T[K], undefined>, true>;
+      }>
+    : AnyObject;
 
-export interface MfdocFieldObjectTypePrimitive<T extends object>
+export interface MfdocFieldObjectTypePrimitive<T extends object | undefined>
   extends MfdocFieldBaseTypePrimitive {
   name: string;
   fields?: MfdocFieldObjectFieldsMap<T>;
@@ -225,7 +228,7 @@ export interface MfdocHttpEndpointDefinitionTypePrimitive<
   TQuery extends AnyObject = AnyObject,
   TRequestBody extends AnyObject = AnyObject,
   TResponseHeaders extends AnyObject = AnyObject,
-  TResponseBody extends AnyObject = AnyObject,
+  TResponseBody extends AnyObject | undefined = AnyObject,
   TSdkParams extends AnyObject = TRequestBody
 > extends MfdocFieldBaseTypePrimitive {
   path: string;
@@ -286,6 +289,7 @@ export enum MfdocHttpEndpointMethod {
   Options = 'options',
   Put = 'put',
   Patch = 'patch',
+  Head = 'head',
 }
 
 function constructBase(
@@ -449,7 +453,7 @@ function constructHttpEndpointDefinition<
   TQuery extends AnyObject = AnyObject,
   TRequestBody extends AnyObject = AnyObject,
   TResponseHeaders extends AnyObject = AnyObject,
-  TResponseBody extends AnyObject = AnyObject,
+  TResponseBody extends AnyObject | undefined = AnyObject,
   TSdkParams extends AnyObject = TRequestBody
 >(
   params: Omit<
