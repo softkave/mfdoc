@@ -10,19 +10,57 @@ import {
   MfdocHttpEndpointDefinitionTypePrimitive,
 } from './mfdoc.js';
 import {kMfdocHttpResponseItems} from './response.js';
-import {filterEndpointsByTags, getEndpointNames} from './utils.js';
+import {filterEndpoints, getEndpointNames} from './utils.js';
 
 function generateEndpointInfoFromEndpoints(params: {
   endpoints: MfdocHttpEndpointDefinitionTypePrimitive[];
-  tags: string[];
+  includeTags?: string[];
+  ignoreTags?: string[];
+  includeTagsRegExp?: RegExp[];
+  ignoreTagsRegExp?: RegExp[];
+  includePaths?: string[];
+  ignorePaths?: string[];
+  includePathsRegExp?: RegExp[];
+  ignorePathsRegExp?: RegExp[];
+  includeNames?: string[];
+  ignoreNames?: string[];
+  includeNamesRegExp?: RegExp[];
+  ignoreNamesRegExp?: RegExp[];
 }) {
-  const {endpoints, tags} = params;
+  const {
+    endpoints,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+  } = params;
   const infoMap = new Map<
     MfdocHttpEndpointDefinitionTypePrimitive<any>,
     string
   >();
 
-  const pickedEndpoints = filterEndpointsByTags(endpoints, tags);
+  const pickedEndpoints = filterEndpoints(endpoints, {
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+  });
   forEach(pickedEndpoints, endpoint => {
     const inf = mfdocConstruct.constructHttpEndpointDefinition({
       ...endpoint,
@@ -102,11 +140,51 @@ function setEndpointInTableOfContent(params: {
 
 export async function genHttpApiEndpointsInfo(params: {
   endpoints: MfdocHttpEndpointDefinitionTypePrimitive[];
-  tags: string[];
+  includeTags?: string[];
+  ignoreTags?: string[];
+  includeTagsRegExp?: RegExp[];
+  ignoreTagsRegExp?: RegExp[];
+  includePaths?: string[];
+  ignorePaths?: string[];
+  includePathsRegExp?: RegExp[];
+  ignorePathsRegExp?: RegExp[];
+  includeNames?: string[];
+  ignoreNames?: string[];
+  includeNamesRegExp?: RegExp[];
+  ignoreNamesRegExp?: RegExp[];
   outputPath: string;
 }) {
-  const {endpoints, tags, outputPath} = params;
-  const infoMap = generateEndpointInfoFromEndpoints({endpoints, tags});
+  const {
+    endpoints,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+    outputPath,
+  } = params;
+  const infoMap = generateEndpointInfoFromEndpoints({
+    endpoints,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+  });
   const promises: Promise<any>[] = [];
   const tableOfContent: MfdocEndpointsTableOfContent = {
     basename: '',
@@ -145,19 +223,104 @@ export async function genHttpApiEndpointsInfo(params: {
 
 export async function genHttpApiEndpointsInfoCmd(params: {
   srcPath: string;
-  tags: string[];
+  includeTags?: string[];
+  ignoreTags?: string[];
+  includeTagsRegExp?: RegExp[];
+  ignoreTagsRegExp?: RegExp[];
+  includePaths?: string[];
+  ignorePaths?: string[];
+  includePathsRegExp?: RegExp[];
+  ignorePathsRegExp?: RegExp[];
+  includeNames?: string[];
+  ignoreNames?: string[];
+  includeNamesRegExp?: RegExp[];
+  ignoreNamesRegExp?: RegExp[];
   outputPath: string;
 }) {
-  const {srcPath, tags, outputPath} = params;
+  const {
+    srcPath,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+    outputPath,
+  } = params;
   const endpoints = await getEndpointsFromSrcPath({srcPath});
-  const filteredEndpoints = filterEndpointsByTags(endpoints, tags);
+  const filteredEndpoints = filterEndpoints(endpoints, {
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+  });
   console.log('endpoints count', filteredEndpoints.length);
-  console.log('tags', tags);
+  if (includeTags && includeTags.length > 0) {
+    console.log('includeTags', includeTags);
+  }
+  if (ignoreTags && ignoreTags.length > 0) {
+    console.log('ignoreTags', ignoreTags);
+  }
+  if (includeTagsRegExp && includeTagsRegExp.length > 0) {
+    console.log('includeTagsRegExp', includeTagsRegExp);
+  }
+  if (ignoreTagsRegExp && ignoreTagsRegExp.length > 0) {
+    console.log('ignoreTagsRegExp', ignoreTagsRegExp);
+  }
+  if (includePaths && includePaths.length > 0) {
+    console.log('includePaths', includePaths);
+  }
+  if (ignorePaths && ignorePaths.length > 0) {
+    console.log('ignorePaths', ignorePaths);
+  }
+  if (includePathsRegExp && includePathsRegExp.length > 0) {
+    console.log('includePathsRegExp', includePathsRegExp);
+  }
+  if (ignorePathsRegExp && ignorePathsRegExp.length > 0) {
+    console.log('ignorePathsRegExp', ignorePathsRegExp);
+  }
+  if (includeNames && includeNames.length > 0) {
+    console.log('includeNames', includeNames);
+  }
+  if (ignoreNames && ignoreNames.length > 0) {
+    console.log('ignoreNames', ignoreNames);
+  }
+  if (includeNamesRegExp && includeNamesRegExp.length > 0) {
+    console.log('includeNamesRegExp', includeNamesRegExp);
+  }
+  if (ignoreNamesRegExp && ignoreNamesRegExp.length > 0) {
+    console.log('ignoreNamesRegExp', ignoreNamesRegExp);
+  }
   console.log('outputPath', outputPath);
   console.log('--------------------------------');
   await genHttpApiEndpointsInfo({
     endpoints: filteredEndpoints,
-    tags,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
     outputPath,
   });
 }

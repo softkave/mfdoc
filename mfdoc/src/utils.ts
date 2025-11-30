@@ -25,6 +25,151 @@ export function filterEndpointsByTags(
   });
 }
 
+function matchesString(value: string, pattern: string): boolean {
+  return value === pattern;
+}
+
+function matchesAnyString(value: string, patterns: string[]): boolean {
+  return patterns.some(pattern => matchesString(value, pattern));
+}
+
+function matchesRegexp(value: string, pattern: RegExp): boolean {
+  return pattern.test(value);
+}
+
+function matchesAnyRegexp(value: string, patterns: RegExp[]): boolean {
+  return patterns.some(pattern => matchesRegexp(value, pattern));
+}
+
+function matchesAny(
+  value: string,
+  stringPatterns: string[],
+  regexpPatterns: RegExp[]
+): boolean {
+  if (stringPatterns.length > 0 && matchesAnyString(value, stringPatterns)) {
+    return true;
+  }
+  if (regexpPatterns.length > 0 && matchesAnyRegexp(value, regexpPatterns)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Parses a regexp string in the format "/pattern/flags" into a RegExp object.
+ * Returns null if the string is not a valid regexp format.
+ */
+export function parseRegExpString(input: string): RegExp | null {
+  const regexMatch = input.match(/^\/(.+)\/([gimuy]*)$/);
+  if (regexMatch) {
+    try {
+      return new RegExp(regexMatch[1], regexMatch[2]);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+export interface FilterEndpointsOptions {
+  includeTags?: string[];
+  ignoreTags?: string[];
+  includeTagsRegExp?: RegExp[];
+  ignoreTagsRegExp?: RegExp[];
+  includePaths?: string[];
+  ignorePaths?: string[];
+  includePathsRegExp?: RegExp[];
+  ignorePathsRegExp?: RegExp[];
+  includeNames?: string[];
+  ignoreNames?: string[];
+  includeNamesRegExp?: RegExp[];
+  ignoreNamesRegExp?: RegExp[];
+}
+
+export function filterEndpoints(
+  endpoints: MfdocHttpEndpointDefinitionTypePrimitive[],
+  options: FilterEndpointsOptions = {}
+): MfdocHttpEndpointDefinitionTypePrimitive[] {
+  const {
+    includeTags = [],
+    ignoreTags = [],
+    includeTagsRegExp = [],
+    ignoreTagsRegExp = [],
+    includePaths = [],
+    ignorePaths = [],
+    includePathsRegExp = [],
+    ignorePathsRegExp = [],
+    includeNames = [],
+    ignoreNames = [],
+    includeNamesRegExp = [],
+    ignoreNamesRegExp = [],
+  } = options;
+
+  return endpoints.filter(endpoint => {
+    // Ignore tags take precedence - if endpoint has any ignore tag, filter it out
+    if (
+      (ignoreTags.length > 0 || ignoreTagsRegExp.length > 0) &&
+      endpoint.tags
+    ) {
+      const hasIgnoreTag = endpoint.tags.some(tag =>
+        matchesAny(tag, ignoreTags, ignoreTagsRegExp)
+      );
+      if (hasIgnoreTag) {
+        return false;
+      }
+    }
+
+    // Include tags - endpoint must have at least one include tag (if includeTags is specified)
+    if (includeTags.length > 0 || includeTagsRegExp.length > 0) {
+      if (!endpoint.tags || endpoint.tags.length === 0) {
+        return false;
+      }
+      const hasIncludeTag = endpoint.tags.some(tag =>
+        matchesAny(tag, includeTags, includeTagsRegExp)
+      );
+      if (!hasIncludeTag) {
+        return false;
+      }
+    }
+
+    // Ignore paths - filter out endpoints with matching paths
+    if (ignorePaths.length > 0 || ignorePathsRegExp.length > 0) {
+      if (matchesAny(endpoint.path, ignorePaths, ignorePathsRegExp)) {
+        return false;
+      }
+    }
+
+    // Include paths - endpoint must match at least one include path (if includePaths is specified)
+    if (includePaths.length > 0 || includePathsRegExp.length > 0) {
+      if (!matchesAny(endpoint.path, includePaths, includePathsRegExp)) {
+        return false;
+      }
+    }
+
+    // Ignore names - filter out endpoints with matching names
+    if (ignoreNames.length > 0 || ignoreNamesRegExp.length > 0) {
+      const fullName = endpoint.name
+        ? endpoint.name
+        : getEndpointNames(endpoint).join('.');
+      if (matchesAny(fullName, ignoreNames, ignoreNamesRegExp)) {
+        return false;
+      }
+    }
+
+    // Include names - endpoint must match at least one include name (if includeNames is specified)
+    if (includeNames.length > 0 || includeNamesRegExp.length > 0) {
+      const fullName = endpoint.name
+        ? endpoint.name
+        : getEndpointNames(endpoint).join('.');
+      if (!matchesAny(fullName, includeNames, includeNamesRegExp)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
 export async function hasPackageJson(params: {outputPath: string}) {
   const {outputPath} = params;
   const pkgJsonPath = path.join(outputPath, 'package.json');

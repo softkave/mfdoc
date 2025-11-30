@@ -43,7 +43,7 @@ import {
   objectHasRequiredFields,
 } from './mfdoc.js';
 import {
-  filterEndpointsByTags,
+  filterEndpoints,
   gatherDescriptionAndExample,
   getDescriptionForJsDoc,
   getEndpointNames,
@@ -605,17 +605,93 @@ export async function genJsSdkCmd(params: {
   srcPath: string;
   outputPath: string;
   filenamePrefix: string;
-  tags: string[];
+  includeTags?: string[];
+  ignoreTags?: string[];
+  includeTagsRegExp?: RegExp[];
+  ignoreTagsRegExp?: RegExp[];
+  includePaths?: string[];
+  ignorePaths?: string[];
+  includePathsRegExp?: RegExp[];
+  ignorePathsRegExp?: RegExp[];
+  includeNames?: string[];
+  ignoreNames?: string[];
+  includeNamesRegExp?: RegExp[];
+  ignoreNamesRegExp?: RegExp[];
   endpointsPath: string;
 }) {
-  const {srcPath, filenamePrefix, tags, outputPath, endpointsPath} = params;
+  const {
+    srcPath,
+    filenamePrefix,
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+    outputPath,
+    endpointsPath,
+  } = params;
   console.log(
     "make sure you have run 'setup-js-sdk' before running this command"
   );
   const endpoints = await getEndpointsFromSrcPath({srcPath});
-  const filteredEndpoints = filterEndpointsByTags(endpoints, tags);
+  const filteredEndpoints = filterEndpoints(endpoints, {
+    includeTags,
+    ignoreTags,
+    includeTagsRegExp,
+    ignoreTagsRegExp,
+    includePaths,
+    ignorePaths,
+    includePathsRegExp,
+    ignorePathsRegExp,
+    includeNames,
+    ignoreNames,
+    includeNamesRegExp,
+    ignoreNamesRegExp,
+  });
   console.log('endpoints count', filteredEndpoints.length);
-  console.log('tags', tags);
+  if (includeTags && includeTags.length > 0) {
+    console.log('includeTags', includeTags);
+  }
+  if (ignoreTags && ignoreTags.length > 0) {
+    console.log('ignoreTags', ignoreTags);
+  }
+  if (includeTagsRegExp && includeTagsRegExp.length > 0) {
+    console.log('includeTagsRegExp', includeTagsRegExp);
+  }
+  if (ignoreTagsRegExp && ignoreTagsRegExp.length > 0) {
+    console.log('ignoreTagsRegExp', ignoreTagsRegExp);
+  }
+  if (includePaths && includePaths.length > 0) {
+    console.log('includePaths', includePaths);
+  }
+  if (ignorePaths && ignorePaths.length > 0) {
+    console.log('ignorePaths', ignorePaths);
+  }
+  if (includePathsRegExp && includePathsRegExp.length > 0) {
+    console.log('includePathsRegExp', includePathsRegExp);
+  }
+  if (ignorePathsRegExp && ignorePathsRegExp.length > 0) {
+    console.log('ignorePathsRegExp', ignorePathsRegExp);
+  }
+  if (includeNames && includeNames.length > 0) {
+    console.log('includeNames', includeNames);
+  }
+  if (ignoreNames && ignoreNames.length > 0) {
+    console.log('ignoreNames', ignoreNames);
+  }
+  if (includeNamesRegExp && includeNamesRegExp.length > 0) {
+    console.log('includeNamesRegExp', includeNamesRegExp);
+  }
+  if (ignoreNamesRegExp && ignoreNamesRegExp.length > 0) {
+    console.log('ignoreNamesRegExp', ignoreNamesRegExp);
+  }
   console.log('outputPath', outputPath);
   console.log('--------------------------------');
   await genJsSdk({
