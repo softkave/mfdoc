@@ -1,6 +1,6 @@
 {
   "name": "mfdoc",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Auto generate JS SDK and HTTP API documentation",
   "author": {
     "email": "ywordk@gmail.com",
