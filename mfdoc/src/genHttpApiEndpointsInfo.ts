@@ -268,44 +268,44 @@ export async function genHttpApiEndpointsInfoCmd(params: {
     includeNamesRegExp,
     ignoreNamesRegExp,
   });
-  console.log('endpoints count', filteredEndpoints.length);
+  console.log('Endpoints count:', filteredEndpoints.length);
   if (includeTags && includeTags.length > 0) {
-    console.log('includeTags', includeTags);
+    console.log('Include tags:', includeTags);
   }
   if (ignoreTags && ignoreTags.length > 0) {
-    console.log('ignoreTags', ignoreTags);
+    console.log('Ignore tags:', ignoreTags);
   }
   if (includeTagsRegExp && includeTagsRegExp.length > 0) {
-    console.log('includeTagsRegExp', includeTagsRegExp);
+    console.log('Include tags RegExp:', includeTagsRegExp);
   }
   if (ignoreTagsRegExp && ignoreTagsRegExp.length > 0) {
-    console.log('ignoreTagsRegExp', ignoreTagsRegExp);
+    console.log('Ignore tags RegExp:', ignoreTagsRegExp);
   }
   if (includePaths && includePaths.length > 0) {
-    console.log('includePaths', includePaths);
+    console.log('Include paths:', includePaths);
   }
   if (ignorePaths && ignorePaths.length > 0) {
-    console.log('ignorePaths', ignorePaths);
+    console.log('Ignore paths:', ignorePaths);
   }
   if (includePathsRegExp && includePathsRegExp.length > 0) {
-    console.log('includePathsRegExp', includePathsRegExp);
+    console.log('Include paths RegExp:', includePathsRegExp);
   }
   if (ignorePathsRegExp && ignorePathsRegExp.length > 0) {
-    console.log('ignorePathsRegExp', ignorePathsRegExp);
+    console.log('Ignore paths RegExp:', ignorePathsRegExp);
   }
   if (includeNames && includeNames.length > 0) {
-    console.log('includeNames', includeNames);
+    console.log('Include names:', includeNames);
   }
   if (ignoreNames && ignoreNames.length > 0) {
-    console.log('ignoreNames', ignoreNames);
+    console.log('Ignore names:', ignoreNames);
   }
   if (includeNamesRegExp && includeNamesRegExp.length > 0) {
-    console.log('includeNamesRegExp', includeNamesRegExp);
+    console.log('Include names RegExp:', includeNamesRegExp);
   }
   if (ignoreNamesRegExp && ignoreNamesRegExp.length > 0) {
-    console.log('ignoreNamesRegExp', ignoreNamesRegExp);
+    console.log('Ignore names RegExp:', ignoreNamesRegExp);
   }
-  console.log('outputPath', outputPath);
+  console.log('Output path:', outputPath);
   console.log('--------------------------------');
   await genHttpApiEndpointsInfo({
     endpoints: filteredEndpoints,
